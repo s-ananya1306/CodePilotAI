@@ -40,15 +40,21 @@ CodePilotAI/
 │── .gitignore
 ```
 
-## Status
+## Current Progress
 
-🚧 Under Active Development
+### ✅ Module 1
+- FastAPI Backend
 
-Current Module:
-- ✅ Repository Upload
-- ✅ Repository Scanner
-- ✅ Code Processing Pipeline
-- 🔄 Embeddings & Semantic Search
+### ✅ Module 2
+- Repository Upload
+- Repository Extraction
+- Repository Scanner
+- Code Chunking
+
+### 🔄 Module 3
+- Embedding Engine
+- FAISS Vector Database
+- Semantic Search
 
 ## Author
 
