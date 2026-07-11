@@ -1,3 +1,6 @@
+import pickle
+from pathlib import Path
+
 import faiss
 import numpy as np
 
@@ -6,9 +9,11 @@ class FAISSVectorStore:
 
     def __init__(self, dimension=384):
 
+        self.dimension = dimension
+
         self.index = faiss.IndexFlatIP(dimension)
 
-        self.documents = []
+        self.metadata = []
 
     def add(self, embedding, metadata):
 
@@ -16,7 +21,7 @@ class FAISSVectorStore:
 
         self.index.add(vector)
 
-        self.documents.append(metadata)
+        self.metadata.append(metadata)
 
     def search(self, embedding, k=5):
 
@@ -31,12 +36,44 @@ class FAISSVectorStore:
             if idx == -1:
                 continue
 
-            results.append({
-
-                "score": float(score),
-
-                "metadata": self.documents[idx]
-
-            })
+            results.append(
+                {
+                    "score": float(score),
+                    "metadata": self.metadata[idx],
+                }
+            )
 
         return results
+
+    def save(self, folder: Path):
+
+        folder.mkdir(parents=True, exist_ok=True)
+
+        faiss.write_index(
+            self.index,
+            str(folder / "codepilot.faiss"),
+        )
+
+        with open(folder / "metadata.pkl", "wb") as f:
+
+            pickle.dump(self.metadata, f)
+
+    def load(self, folder: Path):
+
+        self.index = faiss.read_index(
+            str(folder / "codepilot.faiss")
+        )
+
+        with open(folder / "metadata.pkl", "rb") as f:
+
+            self.metadata = pickle.load(f)
+
+    def stats(self):
+
+        return {
+
+            "vectors": self.index.ntotal,
+
+            "metadata": len(self.metadata),
+
+        }
